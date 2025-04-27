@@ -3,9 +3,9 @@ description:
 globs: 
 alwaysApply: true
 ---
-# AI Rules for {app-name}
+# AI Rules for Repetix
 
-{project-description}
+Repetix helps learners quickly generate high-quality flashcards from custom text (1,000–10,000 characters) using AI, while also providing manual flashcard CRUD operations and spaced repetition review sessions via the SM2 algorithm. The app enforces character limits on front (≤200) and back (≤500) sides, is accessible (WCAG AA compliant), and tracks generation/save metrics.
 
 ## Tech Stack
 
