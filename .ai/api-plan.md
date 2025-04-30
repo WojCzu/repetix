@@ -28,9 +28,11 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
     ```json
     {
       "id": "uuid",
-      "generatedCount": number,
+      "input_length": number,
+      "generated_count": number,
+      "generation_duration": number,
       "candidates": [
-        { "frontText": "string", "backText": "string" },
+        { "front_text": "string", "back_text": "string" },
         ...
       ]
     }
@@ -53,11 +55,12 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
     "data": [
       {
         "id": "uuid",
-        "inputLength": number,
-        "generatedCount": number,
-        "acceptedUneditedCount": number,
-        "acceptedEditedCount": number,
-        "createdAt": "ISO8601"
+        "input_length": number,
+        "generated_count": number,
+        "accepted_unedited_count": number,
+        "accepted_edited_count": number,
+        "generation_duration": number,
+        "created_at": "ISO8601"
       },
       ...
     ],
@@ -74,13 +77,14 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
   ```json
   {
     "id": "uuid",
-    "inputLength": number,
-    "generatedCount": number,
-    "acceptedUneditedCount": number,
-    "acceptedEditedCount": number,
-    "createdAt": "ISO8601",
+    "input_length": number,
+    "generated_count": number,
+    "accepted_unedited_count": number,
+    "accepted_edited_count": number,
+    "generation_duration": number,
+    "created_at": "ISO8601",
     "candidates": [
-      { "frontText": "string", "backText": "string" },
+      { "front_text": "string", "back_text": "string" },
       ...
     ]
   }
@@ -97,9 +101,11 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
     {
       "id": "uuid",
       "model": "string",
-      "errorCode": "string",
-      "errorMessage": "string",
-      "createdAt": "ISO8601"
+      "source_text_hash": "string",
+      "source_text_length": number,
+      "error_code": "string",
+      "error_message": "string",
+      "created_at": "ISO8601"
     },
     ...
   ]
@@ -114,15 +120,30 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
   ```json
   {
     "cards": [
-      { "frontText": "string", "backText": "string", "source": "manual" | "ai-full" | "ai-edited" }
+      { "generation_id": "uuid | null", "front_text": "string", "back_text": "string", "source": "manual" | "ai-full" | "ai-edited" }
     ]
   }
   ```
 - Validations:
-  - Each `frontText` ≤200 chars, each `backText` ≤500 chars.
+  - Each `front_text` ≤200 chars, each `back_text` ≤500 chars.
   - `source` must be one of `manual`, `ai-full`, `ai-edited`.
 - Responses:
-  - `201 Created`: returns created flashcards array in JSON.
+  - `201 Created`:
+    ```json
+    {
+      "cards": [
+        {
+          "id": "uuid",
+          "generation_id": "uuid | null",
+          "front_text": "string",
+          "back_text": "string",
+          "source": "manual" | "ai-full" | "ai-edited",
+          "created_at": "ISO8601",
+          "updated_at": "ISO8601"
+        }
+      ]
+    }
+    ```
 - Errors:
   - `400 Bad Request` for validation failures.
 
@@ -141,10 +162,12 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
     "data": [
       {
         "id": "uuid",
-        "frontText": "string",
-        "backText": "string",
+        "generation_id": "uuid | null",
+        "front_text": "string",
+        "back_text": "string",
         "source": "string",
-        "createdAt": "ISO8601"
+        "created_at": "ISO8601",
+        "updated_at": "ISO8601"
       },
       ...
     ],
@@ -157,7 +180,7 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
 - Description: Retrieve a single flashcard.
 - Path Parameters:
   - `id` (UUID)
-- Response (`200 OK`): flashcard object
+- Response (`200 OK`): flashcard object with fields `id`, `generation_id`, `front_text`, `back_text`, `source`, `created_at`, `updated_at`.
 - Errors: `404 Not Found`
 
 #### PUT /api/flashcards/:id
@@ -166,16 +189,27 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
 - Request Body (`application/json`):
   ```json
   {
-    "frontText": "string",
-    "backText": "string",
+    "front_text": "string",
+    "back_text": "string",
     "source": "manual" | "ai-edited"
   }
   ```
 - Validations:
-  - `frontText` ≤200 chars, `backText` ≤500 chars.
+  - `front_text` ≤200 chars, `back_text` ≤500 chars.
   - `source` must be one of `manual`, `ai-edited`.
 - Responses:
-  - `200 OK` with updated flashcard JSON.
+  - `200 OK`:
+    ```json
+    {
+      "id": "uuid",
+      "generation_id": "uuid | null",
+      "front_text": "string",
+      "back_text": "string",
+      "source": "manual" | "ai-edited",
+      "created_at": "ISO8601",
+      "updated_at": "ISO8601"
+    }
+    ```
 - Errors:
   - `400 Bad Request`, `404 Not Found`
 
@@ -196,13 +230,29 @@ All endpoints below require authentication via `Authorization: Bearer <accessTok
 
 ## 4. Validation & Business Logic
 
+- **Generation workflow**:
+
+  1. Validate `text` length (1000–10000 chars) and return 400 on violation.
+  2. Compute `input_hash` via HMAC-SHA256 with global secret.
+  3. Begin DB transaction: insert new `generations` record with `user_id`, `input_hash`, `input_length`, `generated_count=0`, timestamps.
+  4. Invoke AI service and measure duration.
+  5. Receive candidate list (1–3 cards per 1000 chars), enforce each `front_text` ≤200 and `back_text` ≤500; discard or truncate invalid ones.
+  6. Update `generations.generated_count` and `generations.generation_duration` in DB.
+  7. Commit transaction and return candidates in response.
+  8. On AI or DB error: rollback transaction; insert an error record in `generation_error_logs` with `model`, `errorCode`, `errorMessage`, then return 500.
+
+- **AI Candidate Acceptance & Saving**:
+
+  1. On POST `/api/flashcards` for AI-generated cards (`source` in [`ai-full`, `ai-edited`]): begin transaction.
+  2. Insert each card into `flashcards` with `generation_id` if provided.
+  3. Increment `generations.accepted_unedited_count` for `ai-full` cards and `generations.accepted_edited_count` for `ai-edited` cards.
+  4. Commit and return saved cards; on failure, rollback and return 400 or 404.
+
 - **Text length**: 1000–10000 chars for generation input (`generations.input_length` constraint).
-- **Flashcard text limits**: `frontText` ≤200 chars, `backText` ≤500 chars (`flashcards.front_text`, `flashcards.back_text`).
+- **Flashcard text limits**: `front_text` ≤200 chars, `back_text` ≤500 chars (`flashcards.front_text`, `flashcards.back_text`).
 - **Source field**:
   - On creation: must be one of `manual`, `ai-full`, `ai-edited`.
-  - On update: must be one of `manual`, `ai-edited` (no longer `ai-full`).
-- **AI metrics**: increment `generations.generated_count` on POST `/api/generations`; update `accepted_unedited_count` and `accepted_edited_count` on bulk flashcard creation.
-- **Error logging**: capture AI service failures to `generation_error_logs` (`model`, `errorCode`, `errorMessage`).
-- **Pagination & Sorting**: support `page`, `pageSize`, `sortBy`, `sortOrder` on all list endpoints.
-- **Rate limiting**: apply on POST `/api/generations` (e.g., max 5 requests/min) to protect AI quotas.
-- **Error handling**: use guard clauses, return structured error responses with HTTP status code and descriptive message.
+  - On update: must be one of `manual`, `ai-edited` (no `ai-full`).
+- **Pagination & Sorting**: support `page`, `pageSize`, `sortBy`, `sortOrder` on list endpoints.
+- **Rate limiting**: apply on POST `/api/generations` (e.g., max 5 requests/min).
+- **Error handling**: use guard clauses; return structured errors with HTTP code and message.

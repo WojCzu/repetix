@@ -67,7 +67,6 @@ Ręczne tworzenie wysokiej jakości fiszek jest czasochłonne, co zniechęca do 
 - Brak aplikacji mobilnej (web only na początek).
 - Brak deduplikacji fiszek i ostrzeżeń o powtórzeniach.
 - Brak wersjonowania historii fiszki.
-- Brak backendowej walidacji długości tekstu wejściowego.
 - Brak potwierdzania email przy rejestracji.
 
 ## 5. Historyjki użytkowników
@@ -177,7 +176,7 @@ Kryteria akceptacji:
 - "Akceptuj" oznacza zaznaczenie fiszki do zapisania.
 - "Edytuj" pozwala modyfikować przód/tył w limicie i zapisać zmianę.
 - "Odrzuć" usuwa kandydaturę bez zapisu.
-- Po zatwierdzeniu wybranych fiszek użytkownik może kliknąć przycisk "Zapisz wybrane fiszki", aby dodać je zbiorczo do bazy danych i inkrementować `savedCount` dla każdej zapisanej fiszki.
+- Po zatwierdzeniu wybranych fiszek użytkownik może kliknąć przycisk "Zapisz wybrane fiszki", aby dodać je zbiorczo do bazy danych.
 
 ### US-011
 
