@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "../../db/supabase.client";
 import type { CreateGenerationResponseDto } from "../../types";
 import { AIService } from "./ai.service";
 
@@ -37,7 +37,14 @@ export class GenerationService {
           generated_count: candidates.length,
           generation_duration: generationDuration,
         })
-        .select()
+        .select(
+          `
+          id,
+          input_length,
+          generated_count,
+          generation_duration
+        `
+        )
         .single();
 
       if (insertError || !generation) {
