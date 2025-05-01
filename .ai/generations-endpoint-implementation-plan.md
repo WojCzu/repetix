@@ -74,14 +74,14 @@ Punkt końcowy umożliwia uwierzytelnionym użytkownikom przesłanie surowego te
 
 **Logowanie błędów** w tabeli `generation_error_logs`:
 
-- Pola: `user_id`, `generation_id`, `model`, `source_text_hash`, `source_text_length`, `error_code`, `error_message`.
+- Pola: `user_id`, `model`, `source_text_hash`, `source_text_length`, `error_code`, `error_message`.
 - Wywoływane w `catch` blokach serwisu.
 
 ## 7. Rozważania dotyczące wydajności
 
 - **Transakcje**: grupowanie INSERT/UPDATE w jednej transakcji
 - **Batch insert**: wstawianie flashcards jednym zapytaniem
-- **Indeksy**: indeks na `user_id` i `generation_id`
+- **Indeksy**: indeks na `user_id`
 - **Debounce/Cache**: unikanie duplikatów przez `input_hash`
 - **Timeout**: limit czasu dla wywołania usługi AI (np. 60s) i fallback/error handling
 - **Asynchroniczność**: unikać blokowania event loop

@@ -66,7 +66,6 @@ export interface Database {
           created_at: string;
           error_code: string;
           error_message: string;
-          generation_id: string;
           id: string;
           model: string;
           source_text_hash: string;
@@ -77,7 +76,6 @@ export interface Database {
           created_at?: string;
           error_code: string;
           error_message: string;
-          generation_id: string;
           id?: string;
           model: string;
           source_text_hash: string;
@@ -88,7 +86,6 @@ export interface Database {
           created_at?: string;
           error_code?: string;
           error_message?: string;
-          generation_id?: string;
           id?: string;
           model?: string;
           source_text_hash?: string;
@@ -97,10 +94,10 @@ export interface Database {
         };
         Relationships: [
           {
-            foreignKeyName: "generation_error_logs_generation_id_fkey";
-            columns: ["generation_id"];
+            foreignKeyName: "generation_error_logs_user_id_fkey";
+            columns: ["user_id"];
             isOneToOne: false;
-            referencedRelation: "generations";
+            referencedRelation: "users";
             referencedColumns: ["id"];
           },
         ];

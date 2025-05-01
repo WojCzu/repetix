@@ -32,17 +32,16 @@
 
 ### generation_error_logs
 
-| Column             | Type         | Constraints                                           |
-| ------------------ | ------------ | ----------------------------------------------------- |
-| id                 | UUID         | PRIMARY KEY DEFAULT gen_random_uuid()                 |
-| user_id            | UUID         | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE  |
-| generation_id      | UUID         | NOT NULL REFERENCES generations(id) ON DELETE CASCADE |
-| model              | VARCHAR(100) | NOT NULL                                              |
-| source_text_hash   | CHAR(64)     | NOT NULL                                              |
-| source_text_length | INT          | NOT NULL                                              |
-| error_code         | TEXT         | NOT NULL                                              |
-| error_message      | TEXT         | NOT NULL                                              |
-| created_at         | TIMESTAMPTZ  | NOT NULL DEFAULT now()                                |
+| Column             | Type         | Constraints                                          |
+| ------------------ | ------------ | ---------------------------------------------------- |
+| id                 | UUID         | PRIMARY KEY DEFAULT gen_random_uuid()                |
+| user_id            | UUID         | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE |
+| model              | VARCHAR(100) | NOT NULL                                             |
+| source_text_hash   | CHAR(64)     | NOT NULL                                             |
+| source_text_length | INT          | NOT NULL                                             |
+| error_code         | TEXT         | NOT NULL                                             |
+| error_message      | TEXT         | NOT NULL                                             |
+| created_at         | TIMESTAMPTZ  | NOT NULL DEFAULT now()                               |
 
 ## 2. Relationships
 
@@ -50,7 +49,6 @@
 - **User -> Flashcards**: One-to-Many (`flashcards.user_id` → `auth.users.id`)
 - **User -> GenerationErrorLogs**: One-to-Many (`generation_error_logs.user_id` → `auth.users.id`)
 - **Generations -> Flashcards**: One-to-Many (`flashcards.generation_id` → `generations.id`)
-- **Generations -> GenerationErrorLogs**: One-to-Many (`generation_error_logs.generation_id` → `generations.id`)
 
 ## 3. Indexes
 
@@ -58,7 +56,6 @@
 - `CREATE INDEX ON flashcards(user_id);`
 - `CREATE INDEX ON flashcards(generation_id);`
 - `CREATE INDEX ON generation_error_logs(user_id);`
-- `CREATE INDEX ON generation_error_logs(generation_id);`
 
 ## 4. RLS Policies
 
