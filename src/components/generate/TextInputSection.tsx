@@ -2,19 +2,11 @@ import { type ChangeEvent } from "react";
 import { Button } from "../ui/button";
 import { TextareaWithCounter } from "../ui/TextareaWithCounter";
 import { ValidationMessage } from "../ui/ValidationMessage";
-import { useGenerateForm } from "@/lib/hooks/useGenerateForm";
-import type { GenerateFormData } from "@/lib/validations/generate";
+import { useGenerateFormContext } from "@/lib/contexts/GenerateFormContext";
 
-interface TextInputSectionProps {
-  onSubmit: (data: GenerateFormData) => void;
-  isSubmitting?: boolean;
-}
-
-export default function TextInputSection({ onSubmit, isSubmitting }: TextInputSectionProps) {
-  const { text, error, isValid, setText, handleSubmit } = useGenerateForm({
-    onSubmit,
-    isSubmitting,
-  });
+export default function TextInputSection() {
+  const { text, error, isValid, generationStatus, setText, handleSubmit } = useGenerateFormContext();
+  const isSubmitting = generationStatus === "loading";
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);

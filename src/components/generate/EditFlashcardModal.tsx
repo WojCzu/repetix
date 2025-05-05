@@ -11,14 +11,12 @@ interface EditFlashcardModalProps {
   candidate: ViewModelCandidate | null;
   onSave: (id: string, data: FlashcardFormData) => void;
   onCancel: () => void;
-  isSaving?: boolean;
 }
 
-export function EditFlashcardModal({ isOpen, candidate, onSave, onCancel, isSaving }: EditFlashcardModalProps) {
-  const { formData, errors, isValid, handleChange, handleSubmit, isSubmitting } = useFlashcardForm({
+export function EditFlashcardModal({ isOpen, candidate, onSave, onCancel }: EditFlashcardModalProps) {
+  const { formData, errors, isValid, handleChange, handleSubmit } = useFlashcardForm({
     initialData: candidate,
     onSubmit: (data) => candidate && onSave(candidate.id, data),
-    isSubmitting: isSaving,
   });
 
   return (
@@ -69,8 +67,8 @@ export function EditFlashcardModal({ isOpen, candidate, onSave, onCancel, isSavi
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!isValid || isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
+            <Button type="submit" disabled={!isValid}>
+              Save Changes
             </Button>
           </DialogFooter>
         </form>

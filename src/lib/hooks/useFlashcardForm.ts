@@ -5,10 +5,9 @@ import type { ViewModelCandidate } from "@/types";
 interface UseFlashcardFormProps {
   initialData?: ViewModelCandidate | null;
   onSubmit: (data: FlashcardFormData) => void;
-  isSubmitting?: boolean;
 }
 
-export function useFlashcardForm({ initialData, onSubmit, isSubmitting = false }: UseFlashcardFormProps) {
+export function useFlashcardForm({ initialData, onSubmit }: UseFlashcardFormProps) {
   const [formData, setFormData] = useState<FlashcardFormData>({
     front_text: "",
     back_text: "",
@@ -69,6 +68,5 @@ export function useFlashcardForm({ initialData, onSubmit, isSubmitting = false }
     isValid,
     handleChange,
     handleSubmit,
-    isSubmitting,
   };
 }
