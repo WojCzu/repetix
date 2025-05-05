@@ -161,3 +161,23 @@ export interface ListFlashcardsResponseDto {
  * Alias for GET /api/flashcards/:id and PUT /api/flashcards/:id response.
  */
 export type GetFlashcardResponseDto = FlashcardDto;
+
+// -----------------------------------------------------------------------------
+// UI View Models
+// -----------------------------------------------------------------------------
+
+/**
+ * Represents a flashcard candidate in the UI state before saving.
+ */
+export interface ViewModelCandidate {
+  /** Unique client-side ID for tracking the candidate */
+  id: string;
+  /** Text on the front of the card (≤ 200 chars) */
+  front_text: string;
+  /** Text on the back of the card (≤ 500 chars) */
+  back_text: string;
+  /** Whether the user has accepted this candidate */
+  isAccepted: boolean;
+  /** Whether the candidate has been edited by the user */
+  isEdited: boolean;
+}
