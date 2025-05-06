@@ -100,7 +100,8 @@ Kryteria akceptacji:
 
 - Strona resetu hasła zawiera pole "email".
 - Przy wprowadzeniu istniejącego emaila wysyłana jest wiadomość z linkiem do resetu.
-- Przy nieistniejącym emailu wyświetla się komunikat "Nie znaleziono konta o podanym adresie email".
+- Przy nieistniejącym emailu wyświetla się komunikat "Jeśli email jest powiązany z kontem, wysłaliśmy link do zmiany hasła".
+- Po wysłaniu formularza wyświetlić komunikat: "Jeśli email jest powiązany z kontem, wysłaliśmy link do zmiany hasła".
 - Link resetu prowadzi do formularza z polami "nowe hasło" i "potwierdź hasło".
 - Po poprawnym ustawieniu nowego hasła użytkownik może się zalogować.
 
@@ -207,6 +208,17 @@ Kryteria akceptacji:
 
 - Próba wejścia na `/flashcards`, `/generate` lub `/review` przekierowuje na `/login`.
 - Po zalogowaniu następuje przekierowanie do pierwotnie żądanego widoku lub strony głównej.
+
+### US-014
+
+Tytuł: Wylogowanie  
+Opis: Jako zalogowany użytkownik chcę móc się wylogować, aby zakończyć sesję i zabezpieczyć moje konto.  
+Kryteria akceptacji:
+
+- W nagłówku aplikacji dostępny jest przycisk "Wyloguj".
+- Kliknięcie przycisku wysyła `POST /api/auth/logout`.
+- Po pomyślnym wylogowaniu następuje przekierowanie użytkownika na stronę `/login`.
+- Dostęp do chronionych widoków jest zablokowany (przekierowanie na `/login?redirectTo=...`).
 
 ## 6. Metryki sukcesu
 
