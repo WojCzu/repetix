@@ -1,9 +1,8 @@
 import { createContext, useContext, useCallback, useState, useEffect, type ReactNode, type FormEvent } from "react";
-import { textInputSchema } from "@/lib/validations/generate";
 import type { CreateGenerationCommand, CreateGenerationResponseDto, ViewModelCandidate } from "@/types";
-import type { FlashcardFormData } from "@/lib/validations/flashcard";
 import { toast } from "sonner";
-
+import type { FlashcardFormData } from "../schemas/flashcard.schema";
+import { textInputSchema } from "../schemas/generation.schema";
 type Status = "idle" | "loading" | "success" | "error";
 
 interface GenerateFormState {

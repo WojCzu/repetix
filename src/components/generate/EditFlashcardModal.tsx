@@ -4,7 +4,7 @@ import { TextareaWithCounter } from "../ui/TextareaWithCounter";
 import { ValidationMessage } from "@/components/ui/ValidationMessage";
 import { useFlashcardForm } from "@/lib/hooks/useFlashcardForm";
 import type { ViewModelCandidate } from "@/types";
-import type { FlashcardFormData } from "@/lib/validations/flashcard";
+import type { FlashcardFormData } from "@/lib/schemas/flashcard.schema";
 
 interface EditFlashcardModalProps {
   isOpen: boolean;

@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from "react";
-import { flashcardSchema, type FlashcardFormData } from "@/lib/validations/flashcard";
+import { flashcardTextSchema, type FlashcardFormData } from "@/lib/schemas/flashcard.schema";
 import type { ViewModelCandidate } from "@/types";
 
 interface UseFlashcardFormProps {
@@ -25,7 +25,7 @@ export function useFlashcardForm({ initialData, onSubmit }: UseFlashcardFormProp
   }, [initialData]);
 
   useEffect(() => {
-    const result = flashcardSchema.safeParse(formData);
+    const result = flashcardTextSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
       setErrors({
@@ -49,7 +49,7 @@ export function useFlashcardForm({ initialData, onSubmit }: UseFlashcardFormProp
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const result = flashcardSchema.safeParse(formData);
+    const result = flashcardTextSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
       setErrors({

@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { FlashcardsService } from "../../lib/services/flashcards.service";
-import { createFlashcardsSchema } from "../../lib/schemas/flashcards";
 import { DEFAULT_USER_ID } from "@/db/supabase.client";
+import { createFlashcardsSchema } from "@/lib/schemas/flashcard.schema";
 
 export const prerender = false;
 

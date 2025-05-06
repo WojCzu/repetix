@@ -1,12 +1,36 @@
 import crypto from "crypto";
 import type { SupabaseClient } from "../../db/supabase.client";
 import type { CreateGenerationResponseDto } from "../../types";
-import { AIService } from "./ai.service";
+import { OpenRouterService } from "./openrouter.service";
+import { OPENROUTER_DEFAULTS } from "../constants/openrouter.constants";
+import { flashcardGenerationSchema, type FlashcardsResponseType } from "../schemas/openrouter.schema";
 
 export class GenerationService {
+  private static createOpenRouterService(): OpenRouterService {
+    if (!import.meta.env.OPENROUTER_API_KEY) {
+      throw new Error("OPENROUTER_API_KEY environment variable is not set");
+    }
+
+    return new OpenRouterService(
+      import.meta.env.OPENROUTER_API_KEY,
+      "openai/gpt-4o-mini",
+      {
+        // Controls randomness (0-1). Lower values make output more focused and deterministic
+        temperature: 0.4,
+        // Nucleus sampling - only consider tokens comprising the top 80% of probability mass
+        top_p: 0.8,
+        // Reduces repetition by penalizing tokens based on their frequency in the text so far
+        frequency_penalty: 0.5,
+        // Reduces repetition by penalizing tokens that appear in the text at all
+        presence_penalty: 0.5,
+      },
+      OPENROUTER_DEFAULTS.API_URL
+    );
+  }
+
   constructor(
     private readonly supabase: SupabaseClient,
-    private readonly aiService: AIService
+    private readonly openRouter: OpenRouterService = GenerationService.createOpenRouterService()
   ) {}
 
   /**
@@ -19,15 +43,34 @@ export class GenerationService {
     const startTime = Date.now();
 
     try {
-      // Generate flashcards using AI service
-      const candidates = await this.aiService.generateFlashcards(text);
+      const systemMessage = `You are an expert at creating flashcards. Create flashcards from the provided text. 
+Each flashcard should have a front_text (question/prompt) and back_text (answer/explanation).
+Follow these rules:
+1. Front text must be ≤200 characters and be a clear, focused question or prompt
+2. Back text must be ≤500 characters and provide a complete, accurate answer
+3. Each flashcard should cover a single, important concept
+4. Use clear, concise language
+5. Ensure accuracy and factual correctness
+6. Format response as JSON with array of flashcard objects`;
+
+      const response = await this.openRouter.sendChatCompletion<FlashcardsResponseType>(systemMessage, text, {
+        responseFormat: {
+          type: "json_schema",
+          json_schema: {
+            name: "flashcard_generation",
+            schema: flashcardGenerationSchema,
+          },
+        },
+      });
+
+      const candidates = response.candidates;
 
       // Calculate metadata
       const inputLength = text.length;
       const inputHash = crypto.createHash("md5").update(text).digest("hex");
       const generationDuration = Date.now() - startTime;
 
-      // Create generation record with all data
+      // Create generation record
       const { data: generation, error: insertError } = await this.supabase
         .from("generations")
         .insert({
@@ -80,7 +123,7 @@ export class GenerationService {
       source_text_length: text.length,
       error_code: errorCode,
       error_message: errorMessage,
-      model: "mock",
+      model: this.openRouter.defaultModel,
     });
   }
 }
