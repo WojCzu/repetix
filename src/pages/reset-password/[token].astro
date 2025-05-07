@@ -1,0 +1,13 @@
+---
+import AuthLayout from "../../layouts/AuthLayout.astro";
+import { ResetPasswordView } from "../../components/views/ResetPasswordView";
+
+const { token } = Astro.params;
+if (!token) {
+  return Astro.redirect("/reset-password");
+}
+---
+
+<AuthLayout title="Reset Password">
+  <ResetPasswordView token={token} client:load />
+</AuthLayout>

@@ -1,12 +1,15 @@
 ---
 import "../styles/global.css";
 import { Toaster } from "sonner";
+import { Navigation } from "../components/Navigation";
+import { AuthProvider } from "../lib/contexts/AuthContext";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title?: string;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "Repetix" } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,10 +20,16 @@ const { title = "10x Astro Starter" } = Astro.props;
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <ClientRouter />
   </head>
   <body>
-    <slot />
-    <Toaster client:load closeButton position="top-right" />
+    <AuthProvider client:load>
+      <Navigation client:load />
+      <main transition:animate="fade">
+        <slot />
+      </main>
+      <Toaster client:load closeButton position="top-right" />
+    </AuthProvider>
   </body>
 </html>
 

@@ -1,0 +1,10 @@
+---
+import AuthLayout from "../layouts/AuthLayout.astro";
+import { LoginView } from "../components/views/LoginView";
+
+const redirectTo = Astro.url.searchParams.get("redirectTo") || "/";
+---
+
+<AuthLayout title="Login">
+  <LoginView redirectTo={redirectTo} client:load />
+</AuthLayout>
