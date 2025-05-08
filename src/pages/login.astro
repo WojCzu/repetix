@@ -3,6 +3,15 @@ import AuthLayout from "../layouts/AuthLayout.astro";
 import { LoginView } from "../components/views/LoginView";
 
 const redirectTo = Astro.url.searchParams.get("redirectTo") || "/";
+const code = Astro.url.searchParams.get("code");
+
+// Handle email verification if code is present
+if (code) {
+  const { error } = await Astro.locals.supabase.auth.exchangeCodeForSession(code);
+  if (!error) {
+    return Astro.redirect("/");
+  }
+}
 ---
 
 <AuthLayout title="Login">

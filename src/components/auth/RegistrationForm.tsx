@@ -10,9 +10,10 @@ import { registrationSchema, type RegistrationFormData } from "@/lib/schemas/aut
 
 interface RegistrationFormProps {
   onSubmit: (data: Pick<RegistrationFormData, "email" | "password">) => Promise<void>;
+  isLoading?: boolean;
 }
 
-export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
+export function RegistrationForm({ onSubmit, isLoading = false }: RegistrationFormProps) {
   const [formData, setFormData] = useState<RegistrationFormData>({
     email: "",
     password: "",
@@ -20,29 +21,40 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (field: keyof RegistrationFormData) => (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    // Clear field-specific error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => {
+        const { [field]: _, ...rest } = prev;
+        return rest;
+      });
+    }
   };
 
   const validateForm = () => {
-    const result = registrationSchema.safeParse(formData);
-
-    if (!result.success) {
-      const validationErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
-        const field = err.path[0];
-        if (field) {
-          validationErrors[field] = err.message;
+    try {
+      registrationSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        const zodError = error as { errors?: { path: string[]; message: string }[] };
+        if (zodError.errors) {
+          const validationErrors: Record<string, string> = {};
+          zodError.errors.forEach((err) => {
+            const field = err.path[0];
+            if (field && typeof field === "string") {
+              validationErrors[field] = err.message;
+            }
+          });
+          setErrors(validationErrors);
         }
-      });
-      setErrors(validationErrors);
+      }
       return false;
     }
-
-    setErrors({});
-    return true;
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -50,7 +62,7 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
 
     if (!validateForm()) return;
 
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
       await onSubmit({
         email: formData.email,
@@ -59,18 +71,22 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
     } catch (error) {
       if (error instanceof Error) {
         setErrors({ submit: error.message });
+      } else {
+        setErrors({ submit: "An unexpected error occurred" });
       }
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
+
+  const isFormDisabled = isLoading || isSubmitting;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Create an account</CardTitle>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -81,6 +97,8 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
               onChange={handleChange("email")}
               placeholder="name@example.com"
               required
+              disabled={isFormDisabled}
+              aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
             />
             {errors.email && <ValidationMessage id="email-error" message={errors.email} />}
@@ -94,6 +112,8 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
               value={formData.password}
               onChange={handleChange("password")}
               required
+              disabled={isFormDisabled}
+              aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
             />
             <PasswordStrengthMeter password={formData.password} />
@@ -108,6 +128,8 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
               value={formData.confirmPassword}
               onChange={handleChange("confirmPassword")}
               required
+              disabled={isFormDisabled}
+              aria-invalid={!!errors.confirmPassword}
               aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
             />
             {errors.confirmPassword && (
@@ -115,12 +137,12 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
             )}
           </div>
 
-          {errors.submit && <ValidationMessage id="submit-error" message={errors.submit} />}
+          {errors.submit && <ValidationMessage id="submit-error" message={errors.submit} role="alert" />}
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4 pt-6">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create account"}
+          <Button type="submit" className="w-full" disabled={isFormDisabled}>
+            {isFormDisabled ? "Creating account..." : "Create account"}
           </Button>
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}

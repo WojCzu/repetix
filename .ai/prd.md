@@ -78,9 +78,12 @@ Opis: Jako niezarejestrowany użytkownik chcę utworzyć konto używając adresu
 Kryteria akceptacji:
 
 - Formularz zawiera pola "email", "hasło", "potwierdź hasło".
-- Przy poprawnym emailu i zgodnych hasłach konto zostaje utworzone, użytkownik zostaje zalogowany i przekierowany do strony głównej.
+- Przy poprawnym emailu i zgodnych hasłach konto zostaje utworzone, a użytkownik zostaje przekierowany do strony z informacją o konieczności weryfikacji email.
+- System wysyła email z linkiem weryfikacyjnym na podany adres.
+- Link weryfikacyjny przekierowuje użytkownika na stronę logowania.
 - Przy niepoprawnym formacie email lub niezgodnych hasłach wyświetlany jest odpowiedni komunikat i rejestracja jest blokowana.
 - Wszystkie pola są wymagane.
+- Po kliknięciu w link weryfikacyjny, konto zostaje aktywowane i użytkownik może się zalogować.
 
 ### US-002
 
