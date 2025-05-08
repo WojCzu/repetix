@@ -9,39 +9,50 @@ import { loginSchema, type LoginFormData } from "@/lib/schemas/auth.schema";
 
 interface LoginFormProps {
   onSubmit: (data: LoginFormData) => Promise<void>;
-  redirectTo?: string;
+  isLoading?: boolean;
 }
 
-export function LoginForm({ onSubmit, redirectTo }: LoginFormProps) {
+export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (field: keyof LoginFormData) => (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    // Clear field-specific error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => {
+        const { [field]: _, ...rest } = prev;
+        return rest;
+      });
+    }
   };
 
   const validateForm = () => {
-    const result = loginSchema.safeParse(formData);
-
-    if (!result.success) {
-      const validationErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
-        const field = err.path[0];
-        if (field) {
-          validationErrors[field] = err.message;
+    try {
+      loginSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        const zodError = error as { errors?: { path: string[]; message: string }[] };
+        if (zodError.errors) {
+          const validationErrors: Record<string, string> = {};
+          zodError.errors.forEach((err) => {
+            const field = err.path[0];
+            if (field && typeof field === "string") {
+              validationErrors[field] = err.message;
+            }
+          });
+          setErrors(validationErrors);
         }
-      });
-      setErrors(validationErrors);
+      }
       return false;
     }
-
-    setErrors({});
-    return true;
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -49,27 +60,36 @@ export function LoginForm({ onSubmit, redirectTo }: LoginFormProps) {
 
     if (!validateForm()) return;
 
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
       await onSubmit(formData);
-      if (redirectTo) {
-        window.location.href = redirectTo;
-      }
     } catch (error) {
       if (error instanceof Error) {
-        setErrors({ submit: error.message });
+        // Map common Supabase errors to user-friendly messages
+        const errorMessage = error.message.toLowerCase();
+        if (errorMessage.includes("invalid login credentials")) {
+          setErrors({ submit: "Invalid email or password" });
+        } else if (errorMessage.includes("network")) {
+          setErrors({ submit: "Network error. Please check your connection and try again." });
+        } else {
+          setErrors({ submit: error.message });
+        }
+      } else {
+        setErrors({ submit: "An unexpected error occurred" });
       }
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
+
+  const isFormDisabled = isLoading || isSubmitting;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Sign in to your account</CardTitle>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -80,6 +100,8 @@ export function LoginForm({ onSubmit, redirectTo }: LoginFormProps) {
               onChange={handleChange("email")}
               placeholder="name@example.com"
               required
+              disabled={isFormDisabled}
+              aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
             />
             {errors.email && <ValidationMessage id="email-error" message={errors.email} />}
@@ -93,17 +115,19 @@ export function LoginForm({ onSubmit, redirectTo }: LoginFormProps) {
               value={formData.password}
               onChange={handleChange("password")}
               required
+              disabled={isFormDisabled}
+              aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
             />
             {errors.password && <ValidationMessage id="password-error" message={errors.password} />}
           </div>
 
-          {errors.submit && <ValidationMessage id="submit-error" message={errors.submit} />}
+          {errors.submit && <ValidationMessage id="submit-error" message={errors.submit} role="alert" />}
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4 pt-6">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
+          <Button type="submit" className="w-full" disabled={isFormDisabled}>
+            {isFormDisabled ? "Signing in..." : "Sign in"}
           </Button>
           <div className="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
             <p>

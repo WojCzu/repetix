@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import { Toaster } from "sonner";
-import { Navigation } from "../components/Navigation";
+import { Navigation } from "../components/navigation/Navigation";
 import { AuthProvider } from "../lib/contexts/AuthContext";
 import { ClientRouter } from "astro:transitions";
 
@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { title = "Repetix" } = Astro.props;
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
@@ -24,7 +25,7 @@ const { title = "Repetix" } = Astro.props;
   </head>
   <body>
     <AuthProvider client:load>
-      <Navigation client:load />
+      <Navigation isLoggedIn={!!user} client:load />
       <main transition:animate="fade">
         <slot />
       </main>
