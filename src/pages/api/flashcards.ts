@@ -1,21 +1,17 @@
 import type { APIRoute } from "astro";
 import { FlashcardsService } from "../../lib/services/flashcards.service";
-import { DEFAULT_USER_ID } from "@/db/supabase.client";
 import { createFlashcardsSchema } from "@/lib/schemas/flashcard.schema";
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // TODO: Uncomment this after implementing proper authentication
-    // const {
-    //   data: { user },
-    //   error: authError,
-    // } = await locals.supabase.auth.getUser();
+    // Get user from locals (set by middleware)
+    const user = locals.user;
 
-    // if (authError || !user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-    // }
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
 
     // Parse and validate request body
     const body = await request.json();
@@ -27,7 +23,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Create flashcards
     const service = new FlashcardsService(locals.supabase);
-    const cards = await service.createCards(DEFAULT_USER_ID, result.data.cards);
+    const cards = await service.createCards(user.id, result.data.cards);
 
     return new Response(JSON.stringify({ cards }), {
       status: 201,

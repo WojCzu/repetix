@@ -1,5 +1,4 @@
 import type { APIRoute } from "astro";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
 import { GenerationService } from "../../lib/services/generation.service";
 import { createGenerationSchema } from "../../lib/schemas/generation.schema";
 
@@ -7,6 +6,13 @@ export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Get user from locals (set by middleware)
+    const user = locals.user;
+
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+
     const body = await request.json();
 
     // Validate request body
@@ -29,7 +35,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const generationService = new GenerationService(locals.supabase);
 
     // Generate flashcards
-    const response = await generationService.generateFlashcards(DEFAULT_USER_ID, result.data.text);
+    const response = await generationService.generateFlashcards(user.id, result.data.text);
 
     return new Response(JSON.stringify(response), {
       status: 201,
