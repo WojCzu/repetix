@@ -19,7 +19,7 @@ export type GenerationErrorLogRow = Tables<"generation_error_logs">;
  */
 export interface PaginationDto {
   page: number;
-  page_size: number;
+  pageSize: number;
   total: number;
 }
 

@@ -82,7 +82,7 @@ export class FlashcardsService {
     // Prepare pagination info
     const pagination: PaginationDto = {
       page,
-      page_size: pageSize,
+      pageSize,
       total: count || 0,
     };
 

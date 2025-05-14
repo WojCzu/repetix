@@ -32,7 +32,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       ...rest,
       pagination: {
         page: pagination.page,
-        pageSize: pagination.page_size,
+        pageSize: pagination.pageSize,
         total: pagination.total,
       },
     };

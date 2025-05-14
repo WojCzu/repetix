@@ -1,0 +1,14 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { FlashcardsView } from "../components/views/FlashcardsView";
+
+// Protect this route - redirect to login if not authenticated
+// This should be handled by Astro middleware
+---
+
+<Layout title="My Flashcards - Repetix">
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-8">My Flashcards</h1>
+    <FlashcardsView client:load />
+  </main>
+</Layout>
