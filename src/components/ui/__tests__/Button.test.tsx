@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, axe } from "../../test/vitest.setup";
-import { Button } from "../ui/button";
+import { render, screen, axe } from "../../../test/vitest.setup";
+import { Button } from "../button";
 
 describe("Button component", () => {
   it("renders correctly with children", () => {

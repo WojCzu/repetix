@@ -62,12 +62,15 @@ export function RegistrationForm({ onSubmit, isLoading = false }: RegistrationFo
 
     if (!validateForm()) return;
 
+    // Sanitize input data by trimming whitespace
+    const sanitizedData = {
+      email: formData.email.trim(),
+      password: formData.password.trim(),
+    };
+
     setIsSubmitting(true);
     try {
-      await onSubmit({
-        email: formData.email,
-        password: formData.password,
-      });
+      await onSubmit(sanitizedData);
     } catch (error) {
       if (error instanceof Error) {
         setErrors({ submit: error.message });

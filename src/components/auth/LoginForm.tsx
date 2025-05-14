@@ -60,9 +60,15 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
 
     if (!validateForm()) return;
 
+    // Sanitize input data by trimming whitespace
+    const sanitizedData = {
+      email: formData.email.trim(),
+      password: formData.password.trim(),
+    };
+
     setIsSubmitting(true);
     try {
-      await onSubmit(formData);
+      await onSubmit(sanitizedData);
     } catch (error) {
       if (error instanceof Error) {
         // Map common Supabase errors to user-friendly messages

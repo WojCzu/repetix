@@ -23,7 +23,7 @@ export function LoginView({ redirectTo }: LoginViewProps) {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error);
+        throw new Error(result.error || "An unexpected error occurred");
       }
 
       // Reload the page to trigger server-side redirect
