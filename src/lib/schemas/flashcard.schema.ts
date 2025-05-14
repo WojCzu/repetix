@@ -53,7 +53,39 @@ export const createFlashcardsSchema = z.object({
     .max(100, "Cannot create more than 100 flashcards at once"),
 });
 
+// Schema for updating a flashcard
+export const updateFlashcardSchema = flashcardTextSchema.extend({
+  source: z.enum(["manual", "ai-edited"] as const, {
+    required_error: "Source must be either 'manual' or 'ai-edited'",
+    invalid_type_error: "Source must be either 'manual' or 'ai-edited'",
+  }),
+});
+
+export type UpdateFlashcardData = z.infer<typeof updateFlashcardSchema>;
+
 // Type exports
 export type FlashcardFormData = z.infer<typeof flashcardTextSchema>;
 export type CreateFlashcardData = z.infer<typeof createFlashcardSchema>;
 export type CreateFlashcardsData = z.infer<typeof createFlashcardsSchema>;
+
+// Schema for GET /api/flashcards query parameters
+export const listFlashcardsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1).describe("Page number for pagination"),
+
+  pageSize: z.coerce.number().int().min(1).max(100).default(15).describe("Number of items per page"),
+
+  sortBy: z.enum(["created_at"]).default("created_at").describe("Field to sort by"),
+
+  sortOrder: z.enum(["asc", "desc"]).default("desc").describe("Sort direction"),
+
+  source: flashcardSourceEnum.optional().describe("Filter by flashcard source"),
+});
+
+export type ListFlashcardsQueryParams = z.infer<typeof listFlashcardsQuerySchema>;
+
+// Schema for validating flashcard ID in URL parameters
+export const flashcardIdSchema = z.object({
+  id: z.string().uuid("Invalid flashcard ID format"),
+});
+
+export type FlashcardIdParam = z.infer<typeof flashcardIdSchema>;
