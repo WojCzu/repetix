@@ -4,15 +4,16 @@ import type { CreateGenerationResponseDto } from "../../types";
 import { OpenRouterService } from "./openrouter.service";
 import { OPENROUTER_DEFAULTS } from "../constants/openrouter.constants";
 import { flashcardGenerationSchema, type FlashcardsResponseType } from "../schemas/openrouter.schema";
+import { OPENROUTER_API_KEY } from "astro:env/server";
 
 export class GenerationService {
   private static createOpenRouterService(): OpenRouterService {
-    if (!import.meta.env.OPENROUTER_API_KEY) {
+    if (!OPENROUTER_API_KEY) {
       throw new Error("OPENROUTER_API_KEY environment variable is not set");
     }
 
     return new OpenRouterService(
-      import.meta.env.OPENROUTER_API_KEY,
+      OPENROUTER_API_KEY,
       "openai/gpt-4o-mini",
       {
         // Controls randomness (0-1). Lower values make output more focused and deterministic
