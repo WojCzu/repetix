@@ -37,7 +37,7 @@ For a full list of requirements and user stories, see the [Product Requirements 
 ### CI/CD & Deployment
 
 - **GitHub Actions** – CI/CD pipelines
-- **DigitalOcean** – Docker-based hosting
+- **Cloudflare Pages** – Static site hosting and deployment
 
 ### Testing
 

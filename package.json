@@ -20,7 +20,7 @@
     "test:e2e:prod": "npm run build && cross-env PLAYWRIGHT_TEST_BASE_URL=http://localhost:3000 playwright test"
   },
   "dependencies": {
-    "@astrojs/node": "^9.2.1",
+    "@astrojs/cloudflare": "^12.5.3",
     "@astrojs/react": "^4.2.5",
     "@astrojs/sitemap": "^3.3.1",
     "@radix-ui/react-dialog": "^1.1.11",
