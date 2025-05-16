@@ -3,6 +3,39 @@ import { ApiError, InputValidationError, NetworkError, SchemaValidationError } f
 import { OPENROUTER_DEFAULTS } from "../constants/openrouter.constants";
 import { defaultResponseSchema } from "../schemas/openrouter.schema";
 
+// Utility function to create a fetch with timeout capability
+async function fetchWithTimeout(url: string, options: RequestInit, timeout: number): Promise<Response> {
+  try {
+    // For environments that support AbortController
+    if (typeof AbortController !== "undefined") {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const fetchOptions = {
+        ...options,
+        signal: controller.signal,
+      };
+
+      try {
+        const response = await fetch(url, fetchOptions);
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
+      }
+    } else {
+      // Fallback for environments without AbortController
+      return fetch(url, options);
+    }
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error("Request timeout exceeded");
+    }
+    throw error;
+  }
+}
+
 export class OpenRouterService {
   private readonly _fetcher: typeof fetch;
   private readonly _logger?: Logger;
@@ -31,15 +64,13 @@ export class OpenRouterService {
 
   async sendChatCompletion<T>(systemMessage: string, userMessage: string, options?: ChatOptions): Promise<T> {
     let retries = 0;
+    let lastError: unknown = null;
 
     while (retries <= OPENROUTER_DEFAULTS.MAX_RETRIES) {
       try {
         const payload = this._buildPayload(systemMessage, userMessage, options);
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), OPENROUTER_DEFAULTS.REQUEST_TIMEOUT);
-
-        const response = await this._fetcher(this._apiUrl, {
+        const fetchOptions: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -48,10 +79,16 @@ export class OpenRouterService {
             "X-Title": "Repetix - AI Flashcards",
           },
           body: JSON.stringify(payload),
-          signal: controller.signal,
+        };
+
+        // Log request attempt (useful for debugging in Cloudflare)
+        this._logger?.info(`OpenRouter API request attempt #${retries + 1}`, {
+          url: this._apiUrl,
+          model: options?.model ?? this.defaultModel,
         });
 
-        clearTimeout(timeoutId);
+        // Use our custom fetch wrapper instead of the built-in AbortController
+        const response = await fetchWithTimeout(this._apiUrl, fetchOptions, OPENROUTER_DEFAULTS.REQUEST_TIMEOUT);
 
         if (!response.ok) {
           if (response.status >= 400 && response.status < 500) {
@@ -83,12 +120,17 @@ export class OpenRouterService {
           throw new SchemaValidationError("Failed to parse response content as JSON", error);
         }
       } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          throw new NetworkError("Request timeout exceeded", error);
-        }
+        lastError = error;
 
-        if (retries === OPENROUTER_DEFAULTS.MAX_RETRIES) {
-          return this._handleError(error);
+        // Log the error for debugging
+        this._logger?.error(`OpenRouter API request failed (attempt #${retries + 1})`, {
+          error: error instanceof Error ? error.message : String(error),
+          errorName: error instanceof Error ? error.name : "Unknown",
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+
+        if (retries >= OPENROUTER_DEFAULTS.MAX_RETRIES) {
+          break;
         }
 
         retries++;
@@ -96,7 +138,8 @@ export class OpenRouterService {
       }
     }
 
-    throw new NetworkError("Max retries exceeded");
+    // If we've exhausted retries, handle the last error
+    return this._handleError(lastError);
   }
 
   private _buildPayload(systemMessage: string, userMessage: string, options?: ChatOptions): Record<string, unknown> {
@@ -140,6 +183,16 @@ export class OpenRouterService {
 
     if (error instanceof Response) {
       throw new ApiError("OpenRouter API request failed", error.status, error);
+    }
+
+    // Check for common Cloudflare errors
+    if (
+      error instanceof Error &&
+      (error.message?.includes("fetch failed") ||
+        error.message?.includes("The URL is not specified") ||
+        error.message?.includes("Failed to fetch"))
+    ) {
+      throw new NetworkError("Network error in Cloudflare environment while calling OpenRouter API", error);
     }
 
     if (error instanceof Error && error.name === "TypeError") {

@@ -4,6 +4,7 @@ import { OpenRouterService } from "./openrouter.service";
 import { OPENROUTER_DEFAULTS } from "../constants/openrouter.constants";
 import { flashcardGenerationSchema, type FlashcardsResponseType } from "../schemas/openrouter.schema";
 import { OPENROUTER_API_KEY } from "astro:env/server";
+import type { Logger } from "../types/openrouter.types";
 
 // Utility function to create MD5 hash using Web Crypto API
 async function createMd5Hash(text: string): Promise<string> {
@@ -15,11 +16,29 @@ async function createMd5Hash(text: string): Promise<string> {
   return hashHex;
 }
 
+// Simple logger implementation
+class ConsoleLogger implements Logger {
+  error(message: string, error?: unknown): void {
+    console.error(`[ERROR] ${message}`, error);
+  }
+
+  info(message: string, data?: unknown): void {
+    console.info(`[INFO] ${message}`, data);
+  }
+
+  warn(message: string, data?: unknown): void {
+    console.warn(`[WARN] ${message}`, data);
+  }
+}
+
 export class GenerationService {
   private static createOpenRouterService(): OpenRouterService {
     if (!OPENROUTER_API_KEY) {
       throw new Error("OPENROUTER_API_KEY environment variable is not set");
     }
+
+    // Create logger instance
+    const logger = new ConsoleLogger();
 
     return new OpenRouterService(
       OPENROUTER_API_KEY,
@@ -34,7 +53,8 @@ export class GenerationService {
         // Reduces repetition by penalizing tokens that appear in the text at all
         presence_penalty: 0.5,
       },
-      OPENROUTER_DEFAULTS.API_URL
+      OPENROUTER_DEFAULTS.API_URL,
+      logger
     );
   }
 
