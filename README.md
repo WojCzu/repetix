@@ -158,7 +158,7 @@ npm run test:e2e:prod
 
 ## Project Status
 
-- **Version**: 0.0.1
+- **Version**: 0.0.2
 - **Status**: Early development (alpha)
 
 ## License
