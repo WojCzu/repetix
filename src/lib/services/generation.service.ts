@@ -1,10 +1,19 @@
-import crypto from "crypto";
 import type { SupabaseClient } from "../../db/supabase.client";
 import type { CreateGenerationResponseDto } from "../../types";
 import { OpenRouterService } from "./openrouter.service";
 import { OPENROUTER_DEFAULTS } from "../constants/openrouter.constants";
 import { flashcardGenerationSchema, type FlashcardsResponseType } from "../schemas/openrouter.schema";
 import { OPENROUTER_API_KEY } from "astro:env/server";
+
+// Utility function to create MD5 hash using Web Crypto API
+async function createMd5Hash(text: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest("MD5", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  return hashHex;
+}
 
 export class GenerationService {
   private static createOpenRouterService(): OpenRouterService {
@@ -68,7 +77,7 @@ Follow these rules:
 
       // Calculate metadata
       const inputLength = text.length;
-      const inputHash = crypto.createHash("md5").update(text).digest("hex");
+      const inputHash = await createMd5Hash(text);
       const generationDuration = Date.now() - startTime;
 
       // Create generation record
@@ -116,7 +125,7 @@ Follow these rules:
   private async logGenerationError(userId: string, text: string, error: unknown): Promise<void> {
     const errorCode = error instanceof Error ? error.name : "UnknownError";
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const inputHash = crypto.createHash("md5").update(text).digest("hex");
+    const inputHash = await createMd5Hash(text);
 
     await this.supabase.from("generation_error_logs").insert({
       user_id: userId,
