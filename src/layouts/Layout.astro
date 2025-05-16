@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { Navigation } from "../components/navigation/Navigation";
 import { AuthProvider } from "../lib/contexts/AuthContext";
 import { ClientRouter } from "astro:transitions";
@@ -26,7 +26,7 @@ const user = Astro.locals.user;
   <body>
     <AuthProvider client:load>
       <Navigation isLoggedIn={!!user} client:load />
-      <Toaster client:load closeButton position="top-right" />
+      <Toaster client:load />
       <main transition:animate="fade">
         <slot />
       </main>
