@@ -37,7 +37,6 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeout: numb
 }
 
 export class OpenRouterService {
-  private readonly _fetcher: typeof fetch;
   private readonly _logger?: Logger;
   private readonly _apiUrl: string;
 
@@ -52,13 +51,11 @@ export class OpenRouterService {
       presence_penalty: 0.3,
     },
     apiUrl?: string,
-    logger?: Logger,
-    fetcher: typeof fetch = fetch
+    logger?: Logger
   ) {
     if (!apiKey) throw new Error("OpenRouter API key is required");
 
     this._apiUrl = apiUrl ?? OPENROUTER_DEFAULTS.API_URL;
-    this._fetcher = fetcher;
     this._logger = logger;
   }
 
