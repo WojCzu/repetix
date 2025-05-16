@@ -1,8 +1,12 @@
 ---
-import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
+import Welcome from "../components/Welcome.astro";
+import FeaturesSection from "../components/landing/FeaturesSection.astro";
+import CallToActionSection from "../components/landing/CallToActionSection.astro";
 ---
 
-<Layout>
+<Layout title="Repetix - Learn Smarter with AI-Powered Flashcards">
   <Welcome />
+  <FeaturesSection />
+  <CallToActionSection />
 </Layout>
