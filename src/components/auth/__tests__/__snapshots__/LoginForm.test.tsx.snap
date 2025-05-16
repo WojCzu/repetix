@@ -18,6 +18,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in default state 1`] = `
       </div>
     </div>
     <form
+      data-testid="login-form"
       novalidate=""
     >
       <div
@@ -38,6 +39,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in default state 1`] = `
             aria-invalid="false"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
             data-slot="input"
+            data-testid="email-input"
             id="email"
             placeholder="name@example.com"
             required=""
@@ -59,6 +61,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in default state 1`] = `
             aria-invalid="false"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
             data-slot="input"
+            data-testid="password-input"
             id="password"
             required=""
             type="password"
@@ -73,6 +76,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in default state 1`] = `
         <button
           class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
           data-slot="button"
+          data-testid="submit-button"
           type="submit"
         >
           Sign in
@@ -84,6 +88,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in default state 1`] = `
             Don't have an account? 
             <a
               class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-9 px-4 py-2 has-[>svg]:px-3 text-primary hover:underline"
+              data-testid="register-link"
               href="/register"
             >
               Create an account
@@ -92,6 +97,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in default state 1`] = `
           <p>
             <a
               class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-9 px-4 py-2 has-[>svg]:px-3 text-primary hover:underline"
+              data-testid="reset-password-link"
               href="/reset-password"
             >
               Forgot your password?
@@ -122,6 +128,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in loading state 1`] = `
       </div>
     </div>
     <form
+      data-testid="login-form"
       novalidate=""
     >
       <div
@@ -142,6 +149,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in loading state 1`] = `
             aria-invalid="false"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
             data-slot="input"
+            data-testid="email-input"
             disabled=""
             id="email"
             placeholder="name@example.com"
@@ -164,6 +172,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in loading state 1`] = `
             aria-invalid="false"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
             data-slot="input"
+            data-testid="password-input"
             disabled=""
             id="password"
             required=""
@@ -179,6 +188,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in loading state 1`] = `
         <button
           class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
           data-slot="button"
+          data-testid="submit-button"
           disabled=""
           type="submit"
         >
@@ -191,6 +201,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in loading state 1`] = `
             Don't have an account? 
             <a
               class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-9 px-4 py-2 has-[>svg]:px-3 text-primary hover:underline"
+              data-testid="register-link"
               href="/register"
             >
               Create an account
@@ -199,6 +210,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot in loading state 1`] = `
           <p>
             <a
               class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-9 px-4 py-2 has-[>svg]:px-3 text-primary hover:underline"
+              data-testid="reset-password-link"
               href="/reset-password"
             >
               Forgot your password?
@@ -229,6 +241,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot with validation errors 1`
       </div>
     </div>
     <form
+      data-testid="login-form"
       novalidate=""
     >
       <div
@@ -250,6 +263,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot with validation errors 1`
             aria-invalid="true"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
             data-slot="input"
+            data-testid="email-input"
             id="email"
             placeholder="name@example.com"
             required=""
@@ -280,6 +294,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot with validation errors 1`
             aria-invalid="true"
             class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
             data-slot="input"
+            data-testid="password-input"
             id="password"
             required=""
             type="password"
@@ -302,6 +317,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot with validation errors 1`
         <button
           class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
           data-slot="button"
+          data-testid="submit-button"
           type="submit"
         >
           Sign in
@@ -313,6 +329,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot with validation errors 1`
             Don't have an account? 
             <a
               class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-9 px-4 py-2 has-[>svg]:px-3 text-primary hover:underline"
+              data-testid="register-link"
               href="/register"
             >
               Create an account
@@ -321,6 +338,7 @@ exports[`LoginForm > Snapshot Tests > matches snapshot with validation errors 1`
           <p>
             <a
               class="inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-9 px-4 py-2 has-[>svg]:px-3 text-primary hover:underline"
+              data-testid="reset-password-link"
               href="/reset-password"
             >
               Forgot your password?
