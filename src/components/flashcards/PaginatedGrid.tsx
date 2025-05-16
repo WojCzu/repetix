@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { PaginationDto } from "@/types";
 import { Button } from "@/components/ui/button";
 import { CardListSkeleton } from "@/components/ui/card-skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface PaginatedGridProps<T> {
   items: T[];
@@ -9,9 +10,17 @@ interface PaginatedGridProps<T> {
   onPageChange: (page: number) => void;
   renderItem: (item: T) => ReactNode;
   isLoading: boolean;
+  emptyMessage?: string;
 }
 
-export function PaginatedGrid<T>({ items, pagination, onPageChange, renderItem, isLoading }: PaginatedGridProps<T>) {
+export function PaginatedGrid<T>({
+  items,
+  pagination,
+  onPageChange,
+  renderItem,
+  isLoading,
+  emptyMessage = "No flashcards yet",
+}: PaginatedGridProps<T>) {
   if (isLoading) {
     return <CardListSkeleton />;
   }
@@ -24,10 +33,18 @@ export function PaginatedGrid<T>({ items, pagination, onPageChange, renderItem, 
   const currentPage = pagination.page;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="flashcards-list">
-        {items.map((item) => renderItem(item))}
-      </div>
+    <div className="space-y-6" data-testid="flashcards-list">
+      {items.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {items.map((item) => renderItem(item))}
+        </div>
+      ) : (
+        <Card className="border-dashed">
+          <CardContent className="flex items-center justify-center p-6">
+            <p className="text-muted-foreground text-center py-10">{emptyMessage}</p>
+          </CardContent>
+        </Card>
+      )}
 
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2">
