@@ -1,0 +1,49 @@
+---
+interface Feature {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+const features: Feature[] = [
+  {
+    title: "AI-Powered Generation",
+    description: "Transform your study materials into effective flashcards in seconds using advanced AI technology.",
+    icon: "✨",
+  },
+  {
+    title: "Spaced Repetition",
+    description: "Learn efficiently with the proven SM2 algorithm that optimizes your review schedule.",
+    icon: "🎯",
+  },
+  {
+    title: "Progress Tracking",
+    description: "Monitor your learning progress and review history to stay motivated.",
+    icon: "📈",
+  },
+];
+---
+
+<section id="features" class="py-24 bg-slate-50">
+  <div class="container px-4 md:px-6 mx-auto">
+    <div class="text-center space-y-4">
+      <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Features that Make Learning Easier</h2>
+      <p class="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+        Everything you need to create, manage, and learn from your flashcards effectively.
+      </p>
+    </div>
+    <div class="mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-3 md:gap-12 mt-16">
+      {
+        features.map((feature) => (
+          <div class="relative overflow-hidden rounded-lg border bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+            <div class="space-y-4">
+              <div class="inline-block rounded-lg bg-gray-100 p-3 text-2xl">{feature.icon}</div>
+              <h3 class="text-xl font-bold">{feature.title}</h3>
+              <p class="text-gray-500">{feature.description}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
