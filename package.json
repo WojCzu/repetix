@@ -15,6 +15,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "dev:e2e": "astro dev --mode test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:prod": "npm run build && cross-env PLAYWRIGHT_TEST_BASE_URL=http://localhost:3000 playwright test"
   },
@@ -35,6 +36,7 @@
     "astro": "^5.7.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^16.5.0",
     "lucide-react": "^0.487.0",
     "next-themes": "^0.4.6",
     "react": "19.0.0",

@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import { config } from "dotenv";
+import path from "path";
+
+config({ path: path.resolve(process.cwd(), ".env.test") });
 
 export default defineConfig({
   testDir: "./e2e",
@@ -14,8 +18,18 @@ export default defineConfig({
   },
   projects: [
     {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+      teardown: "cleanup",
+    },
+    {
+      name: "cleanup",
+      testMatch: /global\.teardown\.ts/,
+    },
+    {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/user.json" },
+      dependencies: ["setup"],
     },
   ],
   webServer: {

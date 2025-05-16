@@ -95,7 +95,7 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
       <CardHeader>
         <CardTitle>Sign in to your account</CardTitle>
       </CardHeader>
-      <form onSubmit={handleSubmit} noValidate>
+      <form onSubmit={handleSubmit} noValidate data-testid="login-form">
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -109,8 +109,9 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
               disabled={isFormDisabled}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
+              data-testid="email-input"
             />
-            {errors.email && <ValidationMessage id="email-error" message={errors.email} />}
+            {errors.email && <ValidationMessage id="email-error" message={errors.email} data-testid="email-error" />}
           </div>
 
           <div className="space-y-2">
@@ -124,26 +125,31 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
               disabled={isFormDisabled}
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
+              data-testid="password-input"
             />
-            {errors.password && <ValidationMessage id="password-error" message={errors.password} />}
+            {errors.password && (
+              <ValidationMessage id="password-error" message={errors.password} data-testid="password-error" />
+            )}
           </div>
 
-          {errors.submit && <ValidationMessage id="submit-error" message={errors.submit} role="alert" />}
+          {errors.submit && (
+            <ValidationMessage id="submit-error" message={errors.submit} role="alert" data-testid="submit-error" />
+          )}
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4 pt-6">
-          <Button type="submit" className="w-full" disabled={isFormDisabled}>
+          <Button type="submit" className="w-full" disabled={isFormDisabled} data-testid="submit-button">
             {isFormDisabled ? "Signing in..." : "Sign in"}
           </Button>
           <div className="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
             <p>
               Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-primary hover:underline">
+              <Link href="/register" className="text-primary hover:underline" data-testid="register-link">
                 Create an account
               </Link>
             </p>
             <p>
-              <Link href="/reset-password" className="text-primary hover:underline">
+              <Link href="/reset-password" className="text-primary hover:underline" data-testid="reset-password-link">
                 Forgot your password?
               </Link>
             </p>

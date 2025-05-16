@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent, useCallback } from "react";
 import { flashcardTextSchema, type FlashcardFormData } from "@/lib/schemas/flashcard.schema";
 import type { ViewModelCandidate } from "@/types";
 
@@ -21,8 +21,7 @@ export function useFlashcardForm({ initialData, onSubmit }: UseFlashcardFormProp
   const [errors, setErrors] = useState<Partial<Record<keyof FlashcardFormData, string>>>({});
   const [isValid, setIsValid] = useState(false);
 
-  // Reset form when initialData changes
-  useEffect(() => {
+  const resetForm = useCallback(() => {
     setFormData({
       front_text: initialData?.front_text ?? "",
       back_text: initialData?.back_text ?? "",
@@ -93,5 +92,6 @@ export function useFlashcardForm({ initialData, onSubmit }: UseFlashcardFormProp
     isValid,
     handleChange,
     handleSubmit,
+    resetForm,
   };
 }

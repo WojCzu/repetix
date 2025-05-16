@@ -90,15 +90,135 @@ export function FlashcardsView() {
     setIsConfirmDeleteModalOpen(true);
   };
 
-  const handleAddSuccess = (newFlashcard: FlashcardDto) => {
-    setFlashcards((prev) => [newFlashcard, ...prev]);
+  const handleAddSuccess = async (newFlashcard: FlashcardDto) => {
+    // Add optimistic flashcard
+    const optimisticFlashcard: FlashcardDto = {
+      ...newFlashcard,
+      isOptimistic: true,
+    };
+
+    setFlashcards((prev) => [optimisticFlashcard, ...prev]);
     setPagination((prev) => (prev ? { ...prev, total: prev.total + 1 } : null));
     setIsAddModalOpen(false);
+
+    try {
+      const response = await fetch("/api/flashcards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cards: [
+            {
+              front_text: newFlashcard.front_text,
+              back_text: newFlashcard.back_text,
+              source: "manual",
+              generation_id: null,
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create flashcard");
+      }
+
+      const result = await response.json();
+
+      // Handle both single flashcard and array responses
+      const createdFlashcard = result.cards[0];
+
+      if (!createdFlashcard) {
+        throw new Error("No flashcard data in response");
+      }
+
+      // Update optimistic flashcard with real data
+      setFlashcards((prev) =>
+        prev.map((f) => (f.id === optimisticFlashcard.id ? { ...createdFlashcard, isOptimistic: false } : f))
+      );
+
+      toast.success("Success", {
+        description: "Flashcard created successfully",
+      });
+    } catch (error) {
+      // Revert optimistic update on error
+      setFlashcards((prev) => prev.filter((f) => f.id !== optimisticFlashcard.id));
+      setPagination((prev) => (prev ? { ...prev, total: prev.total - 1 } : null));
+
+      toast.error("Error", {
+        description: "Failed to create flashcard. Please try again later.",
+      });
+    }
   };
 
-  const handleEditSuccess = (updatedFlashcard: FlashcardDto) => {
-    setFlashcards((prev) => prev.map((f) => (f.id === updatedFlashcard.id ? updatedFlashcard : f)));
+  /**
+   * Checks if the flashcard content has been modified from its initial state
+   */
+  const isFlashcardModified = (
+    original: FlashcardDto,
+    updated: Pick<FlashcardDto, "front_text" | "back_text">
+  ): boolean => {
+    return original.front_text !== updated.front_text || original.back_text !== updated.back_text;
+  };
+
+  const handleEditSuccess = async (updatedFlashcard: FlashcardDto) => {
+    // Ensure we have the original flashcard
+    if (!editingFlashcard) {
+      handleEditModalClose();
+      return;
+    }
+
+    // Check if the flashcard was actually modified
+    if (!isFlashcardModified(editingFlashcard, updatedFlashcard)) {
+      handleEditModalClose();
+      return;
+    }
+
+    // Add optimistic update
+    const optimisticFlashcard: FlashcardDto = {
+      ...updatedFlashcard,
+      isOptimistic: true,
+    };
+
+    setFlashcards((prev) => prev.map((f) => (f.id === updatedFlashcard.id ? optimisticFlashcard : f)));
     handleEditModalClose();
+
+    try {
+      const response = await fetch(`/api/flashcards/${updatedFlashcard.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          front_text: updatedFlashcard.front_text,
+          back_text: updatedFlashcard.back_text,
+          source: updatedFlashcard.source,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update flashcard");
+      }
+
+      const result = await response.json();
+
+      // Update optimistic flashcard with real data
+      setFlashcards((prev) =>
+        prev.map((f) => (f.id === optimisticFlashcard.id ? { ...result, isOptimistic: false } : f))
+      );
+
+      toast.success("Success", {
+        description: "Flashcard updated successfully",
+      });
+    } catch (error) {
+      // Store original flashcard for revert
+      const originalFlashcard = editingFlashcard;
+
+      // Revert optimistic update on error
+      setFlashcards((prev) =>
+        prev.map((f) => (f.id === optimisticFlashcard.id ? { ...originalFlashcard, isOptimistic: false } : f))
+      );
+
+      toast.error("Error", {
+        description: "Failed to update flashcard. Please try again later.",
+      });
+    }
   };
 
   const handleDelete = async (flashcardId: string) => {
@@ -106,8 +226,8 @@ export function FlashcardsView() {
     const previousFlashcards = flashcards;
     const previousPagination = pagination;
 
-    setFlashcards((prev) => prev.filter((f) => f.id !== flashcardId));
-    setPagination((prev) => (prev ? { ...prev, total: prev.total - 1 } : null));
+    // Mark flashcard as being deleted
+    setFlashcards((prev) => prev.map((f) => (f.id === flashcardId ? { ...f, isOptimistic: true } : f)));
 
     try {
       const response = await fetch(`/api/flashcards/${flashcardId}`, {
@@ -117,6 +237,10 @@ export function FlashcardsView() {
       if (!response.ok) {
         throw new Error("Failed to delete flashcard");
       }
+
+      // Remove flashcard after successful deletion
+      setFlashcards((prev) => prev.filter((f) => f.id !== flashcardId));
+      setPagination((prev) => (prev ? { ...prev, total: prev.total - 1 } : null));
 
       toast.success("Success", {
         description: "Flashcard deleted successfully",
@@ -139,7 +263,9 @@ export function FlashcardsView() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Button onClick={handleAddClick}>Add New Flashcard</Button>
+          <Button onClick={handleAddClick} data-testid="add-flashcard-button">
+            Add New Flashcard
+          </Button>
           <Select value={sourceFilter} onValueChange={handleSourceFilterChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by source" />

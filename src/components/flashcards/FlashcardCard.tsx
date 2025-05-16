@@ -12,17 +12,25 @@ interface FlashcardCardProps {
 }
 
 export function FlashcardCard({ flashcard, onEdit, onDelete }: FlashcardCardProps) {
-  const { front_text, back_text, source } = flashcard;
+  const { front_text, back_text, source, isOptimistic } = flashcard;
 
   return (
-    <Card>
+    <Card data-testid="flashcard-item">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <SourceBadge source={source as FlashcardSource} />
         <TooltipProvider delayDuration={200}>
           <div className="flex items-center gap-0.5">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="sm" className="h-8 w-8" variant="ghost" onClick={onEdit} aria-label="Edit flashcard">
+                <Button
+                  size="sm"
+                  className="h-8 w-8"
+                  variant="ghost"
+                  onClick={onEdit}
+                  aria-label="Edit flashcard"
+                  data-testid="edit-button"
+                  disabled={isOptimistic}
+                >
                   <PencilIcon className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -35,7 +43,15 @@ export function FlashcardCard({ flashcard, onEdit, onDelete }: FlashcardCardProp
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="sm" className="h-8 w-8" variant="ghost" onClick={onDelete} aria-label="Delete flashcard">
+                <Button
+                  size="sm"
+                  className="h-8 w-8"
+                  variant="ghost"
+                  onClick={onDelete}
+                  aria-label="Delete flashcard"
+                  data-testid="delete-button"
+                  disabled={isOptimistic}
+                >
                   <TrashIcon className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>

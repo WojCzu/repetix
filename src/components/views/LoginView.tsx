@@ -38,5 +38,9 @@ export function LoginView({ redirectTo }: LoginViewProps) {
     }
   };
 
-  return <LoginForm onSubmit={handleLogin} isLoading={isLoading} />;
+  return (
+    <div data-testid="login-view">
+      <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
+    </div>
+  );
 }

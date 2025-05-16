@@ -5,6 +5,7 @@ import { ValidationMessage } from "@/components/ui/ValidationMessage";
 import { useFlashcardForm } from "@/lib/hooks/useFlashcardForm";
 import type { ViewModelCandidate } from "@/types";
 import type { FlashcardFormData } from "@/lib/schemas/flashcard.schema";
+import { useEffect } from "react";
 
 interface EditFlashcardModalProps {
   isOpen: boolean;
@@ -14,10 +15,16 @@ interface EditFlashcardModalProps {
 }
 
 export function EditFlashcardModal({ isOpen, candidate, onSave, onCancel }: EditFlashcardModalProps) {
-  const { formData, errors, isValid, handleChange, handleSubmit } = useFlashcardForm({
+  const { formData, errors, isValid, handleChange, handleSubmit, resetForm } = useFlashcardForm({
     initialData: candidate,
     onSubmit: (data) => candidate && onSave(candidate.id, data),
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      resetForm();
+    }
+  }, [isOpen, resetForm]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>

@@ -132,7 +132,9 @@ export interface CreateFlashcardsCommandDto {
  * Shape of a flashcard in all response payloads.
  * Excludes internal `user_id` field.
  */
-export type FlashcardDto = Omit<FlashcardRow, "user_id">;
+export type FlashcardDto = Omit<FlashcardRow, "user_id"> & {
+  isOptimistic?: boolean;
+};
 
 /**
  * Response for POST /api/flashcards.
